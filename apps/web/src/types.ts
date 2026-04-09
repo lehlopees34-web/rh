@@ -138,27 +138,99 @@ export interface BenefitsResponse {
   }>;
 }
 
-export interface DreEntry {
+export interface DreItem {
   id: string;
-  category: string;
-  description: string;
+  name: string;
   amount: number;
-  reference: string;
+  source: "automatic" | "manual" | "mixed";
+  editable: boolean;
+  notes?: string;
+  variant?: "positive" | "negative" | "neutral";
+}
+
+export interface DreSection {
+  id: string;
+  title: string;
+  formula: string;
+  allowManualEntries: boolean;
+  affectsGroupTotal: boolean;
+  items: DreItem[];
+}
+
+export interface DreGroup {
+  id: string;
+  title: string;
+  formula: string;
+  total: number;
+  percentOfNetRevenue: number;
+  variant: "positive" | "negative" | "neutral";
+  sections: DreSection[];
 }
 
 export interface DreReport {
-  entries: DreEntry[];
+  competence: {
+    month: number;
+    year: number;
+    label: string;
+  };
+  cmvMode: {
+    selected: "MONTHLY" | "WEEKLY" | "WEEKLY_AVERAGE";
+    options: Array<{
+      value: "MONTHLY" | "WEEKLY" | "WEEKLY_AVERAGE";
+      label: string;
+    }>;
+  };
   summary: {
     grossRevenue: number;
-    operatingCosts: number;
+    revenueDeductions: number;
+    netRevenue: number;
+    cmv: number;
+    variableCosts: number;
+    contributionMargin: number;
     totalPersonnelCost: number;
     personnelSalaries: number;
     personnelCharges: number;
     personnelBenefits: number;
-    taxes: number;
+    operationalExpenses: number;
     ebitda: number;
+    financialResult: number;
     netProfit: number;
-    personnelImpactPercent: number;
     marginPercent: number;
+  };
+  dashboard: {
+    cards: Array<{
+      id: string;
+      label: string;
+      value: number;
+    }>;
+    monthlyTrend: Array<{
+      month: number;
+      year: number;
+      grossRevenue: number;
+      netRevenue: number;
+      cmv: number;
+      personnelCost: number;
+      netProfit: number;
+    }>;
+  };
+  groups: DreGroup[];
+  comparison: {
+    previousCompetence: string;
+    grossRevenueDelta: number;
+    netRevenueDelta: number;
+    netProfitDelta: number;
+    currentNetProfit: number;
+    previousNetProfit: number;
+    yearToDateGrossRevenue: number;
+    yearToDateNetRevenue: number;
+    yearToDateNetProfit: number;
+  };
+  configuration: {
+    allowManualAdjustments: boolean;
+    allowCategoryMapping: boolean;
+    allowSubcategoryEditing: boolean;
+    formulasVisible: boolean;
+    supportsPdfExport: boolean;
+    supportsExcelExport: boolean;
   };
 }

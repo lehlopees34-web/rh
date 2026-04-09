@@ -39,6 +39,13 @@ npm run dev
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:3333`
 
+## SQLite no Replit
+
+- O Prisma usa SQLite com caminho relativo ao arquivo [schema.prisma](C:\Users\DELL\OneDrive\Documentos\projeto_app\apps\api\prisma\schema.prisma).
+- O valor recomendado para `DATABASE_URL` e `file:./dev.db`, que gera o banco em `apps/api/prisma/dev.db`.
+- Os scripts `npm run db:generate`, `npm run db:push` e `npm run db:seed` agora preparam automaticamente o `.env` do backend e garantem que o diretorio do SQLite exista antes de rodar o Prisma.
+- Se estiver usando Replit Secrets, defina `DATABASE_URL=file:./dev.db`.
+
 ## Observacoes
 
 - O projeto usa SQLite para acelerar a fase inicial.

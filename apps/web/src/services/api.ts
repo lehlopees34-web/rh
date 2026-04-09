@@ -36,7 +36,7 @@ export const api = {
   getBenefits: () => request("/benefits", mockBenefits),
   getTimeBank: () => request("/time-bank", mockTimeBank),
   getVacations: () => request("/vacations", mockVacations),
-  getDre: (month?: number, year?: number) => {
+  getDre: (month?: number, year?: number, cmvMode?: "MONTHLY" | "WEEKLY" | "WEEKLY_AVERAGE") => {
     const params = new URLSearchParams();
 
     if (month) {
@@ -45,6 +45,10 @@ export const api = {
 
     if (year) {
       params.set("year", String(year));
+    }
+
+    if (cmvMode) {
+      params.set("cmvMode", cmvMode);
     }
 
     const query = params.toString();

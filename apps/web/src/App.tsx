@@ -61,6 +61,15 @@ function getPublicPayslipUrl(token: string) {
   return url.toString();
 }
 
+function formatPercent(value: number) {
+  return `${value.toFixed(2)}%`;
+}
+
+function formatDelta(value: number) {
+  const signal = value > 0 ? "+" : "";
+  return `${signal}${currency.format(value)}`;
+}
+
 function PublicPayslipPage() {
   const pathMatch = window.location.pathname.match(/^\/holerite\/([^/]+)$/);
   const token = pathMatch?.[1] ?? "";
@@ -257,6 +266,9 @@ function MainApp() {
   const [editingEmployeeId, setEditingEmployeeId] = useState<string | null>(null);
   const [selectedCompetenceMonth, setSelectedCompetenceMonth] = useState(initialMonth);
   const [selectedCompetenceYear, setSelectedCompetenceYear] = useState(initialYear);
+  const [selectedCmvMode, setSelectedCmvMode] = useState<"MONTHLY" | "WEEKLY" | "WEEKLY_AVERAGE">("MONTHLY");
+  const [dreView, setDreView] = useState<"table" | "dashboard">("dashboard");
+  const [collapsedDreGroups, setCollapsedDreGroups] = useState<Record<string, boolean>>({});
   const [selectedPayslip, setSelectedPayslip] = useState<PayslipExplanationResponse | null>(null);
   const [isPayslipModalOpen, setIsPayslipModalOpen] = useState(false);
   const [isLoadingPayslip, setIsLoadingPayslip] = useState(false);
@@ -271,9 +283,9 @@ function MainApp() {
       api.getBenefits().then(setBenefits),
       api.getTimeBank().then(setTimeBank),
       api.getVacations().then(setVacations),
-      api.getDre(selectedCompetenceMonth, selectedCompetenceYear).then(setDre),
+      api.getDre(selectedCompetenceMonth, selectedCompetenceYear, selectedCmvMode).then(setDre),
     ]);
-  }, [selectedCompetenceMonth, selectedCompetenceYear]);
+  }, [selectedCompetenceMonth, selectedCompetenceYear, selectedCmvMode]);
 
   useEffect(() => {
     async function reloadOpenPayslip() {
@@ -480,6 +492,13 @@ function MainApp() {
   }
 
   const competenceLabel = `${String(selectedCompetenceMonth).padStart(2, "0")}/${selectedCompetenceYear}`;
+
+  function toggleDreGroup(groupId: string) {
+    setCollapsedDreGroups((current) => ({
+      ...current,
+      [groupId]: !current[groupId],
+    }));
+  }
 
   return (
     <div className="app-shell">
@@ -832,6 +851,41 @@ function MainApp() {
               <div>
                 <p className="eyebrow">Modulo Financeiro</p>
                 <h2>Demonstrativo de Resultado do Exercicio</h2>
+                <p>DRE automatico por competencia com integracao da folha, CMV, receitas e despesas.</p>
+              </div>
+              <div className="competence-controls">
+                <select
+                  value={selectedCompetenceMonth}
+                  onChange={(event) => setSelectedCompetenceMonth(Number(event.target.value))}
+                >
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {String(index + 1).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedCompetenceYear}
+                  onChange={(event) => setSelectedCompetenceYear(Number(event.target.value))}
+                >
+                  {[initialYear - 1, initialYear, initialYear + 1].map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedCmvMode}
+                  onChange={(event) =>
+                    setSelectedCmvMode(event.target.value as "MONTHLY" | "WEEKLY" | "WEEKLY_AVERAGE")
+                  }
+                >
+                  {dre.cmvMode.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </section>
 
@@ -841,58 +895,234 @@ function MainApp() {
                 <strong>{currency.format(dre.summary.grossRevenue)}</strong>
               </div>
               <div className="metric">
-                <span>EBITDA</span>
-                <strong>{currency.format(dre.summary.ebitda)}</strong>
+                <span>Receita Liquida</span>
+                <strong>{currency.format(dre.summary.netRevenue)}</strong>
               </div>
               <div className="metric">
-                <span>Lucro Liquido</span>
-                <strong>{currency.format(dre.summary.netProfit)}</strong>
+                <span>Margem de contribuicao</span>
+                <strong>{currency.format(dre.summary.contributionMargin)}</strong>
               </div>
               <div className="metric">
                 <span>Custo com pessoal</span>
                 <strong>{currency.format(dre.summary.totalPersonnelCost)}</strong>
               </div>
               <div className="metric">
-                <span>Margem</span>
-                <strong>{dre.summary.marginPercent}%</strong>
+                <span>Lucro / prejuizo</span>
+                <strong>{currency.format(dre.summary.netProfit)}</strong>
               </div>
             </section>
 
             <section className="card">
-              <h3>Impacto da folha no DRE</h3>
+              <div className="section-title-row">
+                <h3>Resumo do DRE</h3>
+                <div className="view-toggle">
+                  <button
+                    className={dreView === "dashboard" ? "menu-item active" : "menu-item"}
+                    onClick={() => setDreView("dashboard")}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    className={dreView === "table" ? "menu-item active" : "menu-item"}
+                    onClick={() => setDreView("table")}
+                  >
+                    Tabela
+                  </button>
+                </div>
+              </div>
               <div className="metrics-row compact-metrics">
                 <div className="metric">
-                  <span>Salarios</span>
-                  <strong>{currency.format(dre.summary.personnelSalaries)}</strong>
+                  <span>Deducoes da receita</span>
+                  <strong>{currency.format(dre.summary.revenueDeductions)}</strong>
                 </div>
                 <div className="metric">
-                  <span>Encargos da folha</span>
-                  <strong>{currency.format(dre.summary.personnelCharges)}</strong>
+                  <span>CMV</span>
+                  <strong>{currency.format(dre.summary.cmv)}</strong>
                 </div>
                 <div className="metric">
-                  <span>Beneficios</span>
-                  <strong>{currency.format(dre.summary.personnelBenefits)}</strong>
+                  <span>Despesas operacionais</span>
+                  <strong>{currency.format(dre.summary.operationalExpenses)}</strong>
                 </div>
                 <div className="metric">
-                  <span>Impacto no lucro</span>
-                  <strong>{dre.summary.personnelImpactPercent}%</strong>
+                  <span>Margem liquida</span>
+                  <strong>{formatPercent(dre.summary.marginPercent)}</strong>
                 </div>
               </div>
             </section>
 
-            <section className="card large-card">
-              <h3>Lancamentos DRE</h3>
-              <div className="table-like">
-                {dre.entries.map((entry) => (
-                  <div className="table-row" key={entry.id}>
+            <section className="panel-grid">
+              <article className="card">
+                <h3>Comparativo e acumulado</h3>
+                <div className="metrics-row compact-metrics">
+                  <div className="metric">
+                    <span>Competencia anterior</span>
+                    <strong>{dre.comparison.previousCompetence}</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Delta receita liquida</span>
+                    <strong>{formatDelta(dre.comparison.netRevenueDelta)}</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Delta lucro</span>
+                    <strong>{formatDelta(dre.comparison.netProfitDelta)}</strong>
+                  </div>
+                  <div className="metric">
+                    <span>Acumulado lucro no ano</span>
+                    <strong>{currency.format(dre.comparison.yearToDateNetProfit)}</strong>
+                  </div>
+                </div>
+              </article>
+
+              <article className="card">
+                <h3>Integracoes e configuracao</h3>
+                <div className="simple-list">
+                  <div className="table-row">
                     <div>
-                      <strong>{entry.description}</strong>
-                      <span>{entry.category}</span>
+                      <strong>Folha integrada ao DRE</strong>
+                      <span>Salarios, adicionais, provisoes, encargos e beneficios.</span>
                     </div>
+                    <strong>{currency.format(dre.summary.totalPersonnelCost)}</strong>
+                  </div>
+                  <div className="table-row">
                     <div>
-                      <span>{dateFormatter.format(new Date(entry.reference))}</span>
-                      <strong>{currency.format(entry.amount)}</strong>
+                      <strong>Modo do CMV</strong>
+                      <span>{dre.cmvMode.options.find((option) => option.value === dre.cmvMode.selected)?.label}</span>
                     </div>
+                    <strong>{currency.format(dre.summary.cmv)}</strong>
+                  </div>
+                  <div className="table-row">
+                    <div>
+                      <strong>Ajustes manuais</strong>
+                      <span>{dre.configuration.allowManualAdjustments ? "Estrutura habilitada para ajustes futuros." : "Desabilitado"}</span>
+                    </div>
+                    <strong>{dre.configuration.allowManualAdjustments ? "Ativo" : "Inativo"}</strong>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            {dreView === "dashboard" ? (
+              <>
+                <section className="cards-grid three-columns">
+                  {dre.dashboard.cards.map((card) => (
+                    <article className="card" key={card.id}>
+                      <p className="eyebrow">Indicador</p>
+                      <h3>{card.label}</h3>
+                      <strong className="dashboard-card-value">{currency.format(card.value)}</strong>
+                    </article>
+                  ))}
+                </section>
+
+                <section className="card large-card">
+                  <div className="section-title-row">
+                    <h3>Evolucao mensal</h3>
+                    <span className="pill-badge">Acumulado ate {dre.competence.label}</span>
+                  </div>
+                  <div className="dre-trend-list">
+                    {dre.dashboard.monthlyTrend.map((point) => (
+                      <div className="dre-trend-row" key={`${point.year}-${point.month}`}>
+                        <div>
+                          <strong>{String(point.month).padStart(2, "0")}/{point.year}</strong>
+                          <span>Receita liquida {currency.format(point.netRevenue)}</span>
+                        </div>
+                        <div>
+                          <span>CMV {currency.format(point.cmv)}</span>
+                          <span>Pessoal {currency.format(point.personnelCost)}</span>
+                          <strong>{currency.format(point.netProfit)}</strong>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
+            ) : (
+              <section className="card large-card">
+                <div className="section-title-row">
+                  <h3>Estrutura completa do DRE</h3>
+                  <span className="pill-badge">Percentual sobre receita liquida</span>
+                </div>
+                <div className="dre-groups">
+                  {dre.groups.map((group) => {
+                    const isCollapsed = collapsedDreGroups[group.id] ?? false;
+
+                    return (
+                      <article className="dre-group-card" key={group.id}>
+                        <button className="dre-group-header" onClick={() => toggleDreGroup(group.id)}>
+                          <div>
+                            <strong>{group.title}</strong>
+                            <span>{group.formula}</span>
+                          </div>
+                          <div className="dre-group-meta">
+                            <span>{currency.format(group.total)}</span>
+                            <span>{formatPercent(group.percentOfNetRevenue)}</span>
+                            <span>{isCollapsed ? "Expandir" : "Recolher"}</span>
+                          </div>
+                        </button>
+
+                        {!isCollapsed ? (
+                          <div className="dre-group-content">
+                            {group.sections.map((section) => {
+                              const sectionTotal = section.items.reduce((sum, item) => sum + item.amount, 0);
+
+                              return (
+                                <section className="dre-section-block" key={section.id}>
+                                  <div className="dre-section-head">
+                                    <div>
+                                      <strong>{section.title}</strong>
+                                      <span>{section.formula}</span>
+                                    </div>
+                                    <div className="dre-section-meta">
+                                      <span>{section.allowManualEntries ? "Aceita ajuste manual" : "Automatico"}</span>
+                                      <strong>{currency.format(sectionTotal)}</strong>
+                                    </div>
+                                  </div>
+                                  <div className="dre-line-table">
+                                    <div className="dre-line-table-header">
+                                      <span>Subcategoria</span>
+                                      <span>Origem</span>
+                                      <span>Valor</span>
+                                      <span>% Receita liquida</span>
+                                    </div>
+                                    {section.items.map((item) => (
+                                      <div className="dre-line-row" key={item.id}>
+                                        <div>
+                                          <strong>{item.name}</strong>
+                                          <span>{item.notes ?? "Sem observacao complementar."}</span>
+                                        </div>
+                                        <span>{item.source === "automatic" ? "Automatico" : item.source === "manual" ? "Manual" : "Misto"}</span>
+                                        <strong>{currency.format(item.amount)}</strong>
+                                        <span>{formatPercent(dre.summary.netRevenue > 0 ? (item.amount / dre.summary.netRevenue) * 100 : 0)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </section>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            <section className="card">
+              <h3>Blocos de resultado</h3>
+              <div className="dre-result-grid">
+                {[
+                  { label: "Receita liquida", value: dre.summary.netRevenue },
+                  { label: "Custos variaveis", value: dre.summary.variableCosts },
+                  { label: "Margem de contribuicao", value: dre.summary.contributionMargin },
+                  { label: "Custos com pessoal", value: dre.summary.totalPersonnelCost },
+                  { label: "Despesas operacionais", value: dre.summary.operationalExpenses },
+                  { label: "EBITDA", value: dre.summary.ebitda },
+                  { label: "Resultado financeiro", value: dre.summary.financialResult },
+                  { label: "Lucro / prejuizo", value: dre.summary.netProfit },
+                ].map((item) => (
+                  <div className="dre-result-item" key={item.label}>
+                    <span>{item.label}</span>
+                    <strong>{currency.format(item.value)}</strong>
                   </div>
                 ))}
               </div>
