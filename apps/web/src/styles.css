@@ -1,0 +1,703 @@
+:root {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #102033;
+  background:
+    radial-gradient(circle at top left, rgba(42, 109, 244, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(21, 184, 124, 0.16), transparent 24%),
+    linear-gradient(135deg, #f7fafc 0%, #edf4f9 100%);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(16, 32, 51, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 24px;
+  background: linear-gradient(180deg, #102c57 0%, #0b1f3c 100%);
+  color: #f5f8fb;
+}
+
+.sidebar h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.sidebar-copy {
+  margin: 0;
+  color: rgba(245, 248, 251, 0.78);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  color: #49c5b6;
+}
+
+.menu {
+  display: grid;
+  gap: 12px;
+  margin: 32px 0;
+}
+
+.menu-item {
+  padding: 14px 16px;
+  border-radius: 14px;
+  text-align: left;
+  color: #e5edf7;
+  background: rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  background: rgba(73, 197, 182, 0.22);
+  transform: translateX(4px);
+}
+
+.sidebar-footer {
+  display: grid;
+  gap: 6px;
+  color: rgba(245, 248, 251, 0.7);
+  font-size: 0.92rem;
+}
+
+.content {
+  padding: 32px;
+}
+
+.hero,
+.section-header,
+.cards-grid,
+.metrics-row,
+.panel-grid {
+  margin-bottom: 24px;
+}
+
+.hero,
+.cards-grid,
+.cards-grid.three-columns,
+.metrics-row,
+.panel-grid,
+.payslip-meta,
+.holerite-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.hero h2,
+.section-header h2 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.hero p,
+.section-header p {
+  margin: 0;
+}
+
+.hero-panel,
+.card,
+.metric {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 14px 40px rgba(16, 32, 51, 0.08);
+}
+
+.hero-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(145deg, #163967, #0f2f58);
+  color: #f5f8fb;
+}
+
+.hero-panel strong {
+  font-size: 2rem;
+}
+
+.card {
+  padding: 24px;
+}
+
+.card-highlight {
+  background: linear-gradient(145deg, rgba(73, 197, 182, 0.16), rgba(42, 109, 244, 0.14));
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.card button {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: white;
+  background: #102c57;
+  min-height: 44px;
+}
+
+.secondary-button {
+  background: rgba(16, 44, 87, 0.1) !important;
+  color: #102c57 !important;
+}
+
+.batch-export-button {
+  margin-top: 0 !important;
+}
+
+.employee-form {
+  display: grid;
+  gap: 12px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.competence-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.competence-controls select {
+  width: auto;
+  min-width: 88px;
+}
+
+.modal-competence-controls select {
+  background: white;
+}
+
+.pill-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0d5b4b;
+  background: rgba(73, 197, 182, 0.18);
+}
+
+.status-message {
+  margin: 14px 0 0;
+  color: #1a5f4e;
+  font-weight: 600;
+}
+
+.metric {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metric strong {
+  font-size: 1.6rem;
+}
+
+.large-card {
+  min-height: 280px;
+}
+
+.simple-list,
+.explanation-list {
+  display: grid;
+  gap: 12px;
+}
+
+.simple-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.simple-list li,
+.explanation-item,
+.table-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.employee-list-item {
+  display: grid;
+  gap: 2px;
+}
+
+.employee-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.simple-list li:last-child,
+.explanation-item:last-child,
+.table-row:last-child {
+  border-bottom: 0;
+}
+
+.simple-list li,
+.benefit-column,
+.table-row,
+.explanation-item {
+  flex-wrap: wrap;
+}
+
+.simple-list span,
+.table-row span,
+.benefit-column span {
+  color: #53657a;
+}
+
+.ghost-button {
+  margin-top: 0;
+  padding: 10px 12px;
+  background: rgba(16, 44, 87, 0.08);
+  color: #102c57;
+  min-height: 44px;
+}
+
+.danger-button {
+  background: rgba(164, 33, 54, 0.12);
+  color: #8b1732;
+}
+
+.table-like {
+  display: grid;
+}
+
+.payroll-table .table-row strong {
+  display: block;
+}
+
+.payroll-summary-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(16, 44, 87, 0.05);
+}
+
+.payroll-summary-box div,
+.breakdown-column {
+  display: grid;
+  gap: 6px;
+}
+
+.helper-text {
+  margin: 16px 0 0;
+  color: #53657a;
+}
+
+.explanation-item p {
+  margin: 6px 0 0;
+  color: #53657a;
+}
+
+.explanation-earning {
+  border-left: 4px solid rgba(15, 126, 94, 0.35);
+  padding-left: 12px;
+}
+
+.explanation-deduction {
+  border-left: 4px solid rgba(164, 33, 54, 0.28);
+  padding-left: 12px;
+}
+
+.explanation-info {
+  border-left: 4px solid rgba(16, 44, 87, 0.24);
+  padding-left: 12px;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.benefit-column {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(16, 44, 87, 0.04);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(11, 20, 37, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.payslip-modal {
+  width: min(1100px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 28px;
+  background: #f8fbfd;
+  box-shadow: 0 24px 70px rgba(11, 20, 37, 0.28);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 28px 18px;
+  border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+  flex-wrap: wrap;
+}
+
+.modal-header h2,
+.holerite-panel h3 {
+  margin: 0;
+}
+
+.modal-header p {
+  margin: 4px 0 0;
+  color: #53657a;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdf-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: rgba(16, 44, 87, 0.08);
+  color: #102c57;
+}
+
+.modal-loading {
+  padding: 32px 28px;
+  color: #53657a;
+}
+
+.payslip-sheet {
+  padding: 24px 28px 28px;
+}
+
+.payslip-top-summary {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(73, 197, 182, 0.16), rgba(42, 109, 244, 0.12));
+  margin-bottom: 20px;
+}
+
+.payslip-top-summary strong {
+  font-size: 1.05rem;
+}
+
+.payslip-core {
+  display: grid;
+  gap: 20px;
+}
+
+.payslip-meta div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: white;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.payslip-meta span,
+.holerite-item p {
+  color: #53657a;
+}
+
+.holerite-panel {
+  padding: 20px;
+  border-radius: 22px;
+  background: white;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.holerite-bases {
+  background: rgba(16, 44, 87, 0.03);
+}
+
+.holerite-totals {
+  background: linear-gradient(135deg, rgba(16, 44, 87, 0.05), rgba(73, 197, 182, 0.08));
+}
+
+.holerite-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.holerite-item:last-child {
+  border-bottom: 0;
+}
+
+.holerite-item div {
+  display: grid;
+  gap: 6px;
+}
+
+.holerite-item p {
+  margin: 0;
+  font-size: 0.94rem;
+}
+
+.public-payslip-page {
+  min-height: 100vh;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top left, rgba(42, 109, 244, 0.14), transparent 28%),
+    linear-gradient(180deg, #f7fafc 0%, #eef4f8 100%);
+}
+
+.public-payslip-card {
+  width: min(980px, 100%);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 18px 48px rgba(16, 32, 51, 0.12);
+  padding: 18px;
+}
+
+.public-payslip-card-error {
+  max-width: 560px;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.public-payslip-card-error h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.public-payslip-note {
+  margin: 0;
+  color: #53657a;
+}
+
+.public-payslip-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.public-payslip-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.public-payslip-header p {
+  margin: 4px 0 0;
+  color: #53657a;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.status-badge.pending {
+  background: rgba(189, 132, 13, 0.14);
+  color: #8b5b00;
+}
+
+.status-badge.signed {
+  background: rgba(15, 126, 94, 0.14);
+  color: #0d5b4b;
+}
+
+.compact-metrics {
+  gap: 12px;
+}
+
+@media (min-width: 1081px) {
+  .app-shell {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .hero {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cards-grid.three-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .metrics-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payslip-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .holerite-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1080px) {
+  .app-shell,
+  .hero,
+  .cards-grid,
+  .cards-grid.three-columns,
+  .metrics-row,
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    gap: 24px;
+  }
+
+  .payroll-summary-box {
+    grid-template-columns: 1fr;
+  }
+
+  .payslip-meta,
+  .holerite-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .content,
+  .card,
+  .metric,
+  .holerite-panel,
+  .public-payslip-card {
+    padding: 16px;
+  }
+
+  .content {
+    padding: 14px;
+  }
+
+  .sidebar {
+    padding: 18px 16px;
+  }
+
+  .hero h2,
+  .section-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-header,
+  .payslip-sheet {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .competence-controls,
+  .modal-actions,
+  .employee-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .competence-controls select,
+  .employee-actions button,
+  .modal-actions button,
+  .batch-export-button,
+  .ghost-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .table-row,
+  .simple-list li,
+  .holerite-item,
+  .public-payslip-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id              String             @id @default(cuid())
+  name            String
+  document        String             @unique
+  email           String             @unique
+  phone           String
+  role            String
+  department      String
+  admissionDate   DateTime
+  salaryBase      Float
+  status          EmployeeStatus     @default(ACTIVE)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  benefits        EmployeeBenefit[]
+  vacations       Vacation[]
+  timeBankEntries TimeBankEntry[]
+  payrolls        Payroll[]
+  payslipSigns    PayslipSignature[]
+  payslipTokens   PayslipAccessToken[]
+  payslipAccesses PayslipAccessLog[]
+}
+
+model Benefit {
+  id          String            @id @default(cuid())
+  type        BenefitType
+  name        String
+  monthlyCost Float
+  copay       Float             @default(0)
+  active      Boolean           @default(true)
+  employees   EmployeeBenefit[]
+}
+
+model EmployeeBenefit {
+  id         String    @id @default(cuid())
+  employeeId String
+  benefitId  String
+  startDate  DateTime
+  endDate    DateTime?
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+  benefit    Benefit   @relation(fields: [benefitId], references: [id])
+
+  @@unique([employeeId, benefitId, startDate])
+}
+
+model TimeBankEntry {
+  id          String            @id @default(cuid())
+  employeeId  String
+  date        DateTime
+  minutes     Int
+  type        TimeBankEntryType
+  description String
+  employee    Employee          @relation(fields: [employeeId], references: [id])
+}
+
+model Vacation {
+  id          String          @id @default(cuid())
+  employeeId  String
+  startDate   DateTime
+  endDate     DateTime
+  days        Int
+  status      VacationStatus  @default(SCHEDULED)
+  employee    Employee        @relation(fields: [employeeId], references: [id])
+}
+
+model Payroll {
+  id              String   @id @default(cuid())
+  employeeId      String
+  month           Int
+  year            Int
+  baseSalary      Float
+  overtimeAmount  Float
+  benefitsAmount  Float
+  deductions      Float
+  netSalary       Float
+  explanationJson String
+  createdAt       DateTime @default(now())
+  employee        Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([employeeId, month, year])
+}
+
+model DreEntry {
+  id          String        @id @default(cuid())
+  category    DreCategory
+  description String
+  amount      Float
+  reference   DateTime
+  createdAt   DateTime      @default(now())
+}
+
+model PayslipSignature {
+  id         String   @id @default(cuid())
+  employeeId String
+  month      Int
+  year       Int
+  status     String
+  signedAt   DateTime?
+  signedIp   String?
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([employeeId, month, year])
+}
+
+model PayslipAccessToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  employeeId String
+  month      Int
+  year       Int
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  @@index([employeeId, month, year])
+}
+
+model PayslipAccessLog {
+  id         String   @id @default(cuid())
+  token      String
+  employeeId String
+  month      Int
+  year       Int
+  viewed     Boolean  @default(true)
+  accessedAt DateTime @default(now())
+  ip         String?
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  @@index([token])
+  @@index([employeeId, month, year])
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  VACATION
+  LEAVE
+  DISMISSED
+}
+
+enum BenefitType {
+  TRANSPORT
+  HEALTH
+  DENTAL
+}
+
+enum TimeBankEntryType {
+  CREDIT
+  DEBIT
+}
+
+enum VacationStatus {
+  SCHEDULED
+  APPROVED
+  TAKEN
+}
+
+enum DreCategory {
+  REVENUE
+  VARIABLE_COST
+  FIXED_COST
+  PERSONNEL_COST
+  ADMIN_EXPENSE
+  TAX
+  OTHER
+}
